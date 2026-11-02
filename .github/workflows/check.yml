@@ -8,6 +8,15 @@ jobs:
     runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
+      - name: Install as a user would (fresh tap from GitHub, no explicit trust)
+        id: user_install
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          brew install --cask jimbo23/alttab-rs/alttab-rs
+          test -x /Applications/AltTab-rs.app/Contents/MacOS/alttab-rs
+          brew uninstall --cask jimbo23/alttab-rs/alttab-rs
+          brew untap jimbo23/alttab-rs
       - name: Tap this checkout
         run: |
           set -euo pipefail
@@ -15,6 +24,7 @@ jobs:
           mkdir -p "$(dirname "$TAP_DIR")"
           rm -rf "$TAP_DIR"
           cp -R "$GITHUB_WORKSPACE" "$TAP_DIR"
+          brew trust --cask jimbo23/alttab-rs/alttab-rs
       - run: brew style jimbo23/alttab-rs
       - run: brew audit --cask --online jimbo23/alttab-rs/alttab-rs
       - name: Install and inspect
