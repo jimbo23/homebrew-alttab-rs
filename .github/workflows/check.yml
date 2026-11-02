@@ -1,0 +1,29 @@
+name: Check cask
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  check:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tap this checkout
+        run: |
+          set -euo pipefail
+          TAP_DIR="$(brew --repository)/Library/Taps/jimbo23/homebrew-alttab-rs"
+          mkdir -p "$(dirname "$TAP_DIR")"
+          rm -rf "$TAP_DIR"
+          cp -R "$GITHUB_WORKSPACE" "$TAP_DIR"
+      - run: brew style jimbo23/alttab-rs
+      - run: brew audit --cask --online jimbo23/alttab-rs/alttab-rs
+      - name: Install and inspect
+        run: |
+          set -euo pipefail
+          brew install --cask jimbo23/alttab-rs/alttab-rs
+          test -x /Applications/AltTab-rs.app/Contents/MacOS/alttab-rs
+          lipo -archs /Applications/AltTab-rs.app/Contents/MacOS/alttab-rs
+          codesign --verify --deep --verbose=2 /Applications/AltTab-rs.app
+          plutil -p /Applications/AltTab-rs.app/Contents/Info.plist
+      - name: Uninstall
+        run: brew uninstall --cask jimbo23/alttab-rs/alttab-rs

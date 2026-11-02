@@ -1,6 +1,6 @@
 cask "alttab-rs" do
   version "0.1.0"
-  sha256 "REPLACE_WITH_SHA256"
+  sha256 "ff4a5c5237368dd8057759be1865968cc67283fe1baecaa1283a7985d9c4f4dd"
 
   url "https://github.com/jimbo23/alttab-rs/releases/download/v#{version}/AltTab-rs-#{version}.zip"
   name "AltTab-rs"
